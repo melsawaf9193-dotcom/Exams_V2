@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نتائج الدورة والبرقيات</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Cairo', sans-serif;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
+    url('https://raw.githubusercontent.com/xhhp1/medicaljpg/main/medic.jpg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.overlay {
+  min-height: 100vh;
+  padding: 30px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 950px;
+  background: rgba(18, 22, 31, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.header h1 {
+  font-weight: 800;
+  font-size: 28px;
+  background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #a0aec0;
+  font-family: 'Cairo', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 15px rgba(0, 198, 255, 0.3);
+}
+
+.inputs-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.input-field {
+  flex: 1;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #cbd5e0;
+  font-weight: 600;
+}
+
+input[type="text"], textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(10, 14, 23, 0.7);
+  color: #e2e8f0;
+  font-family: 'Cairo', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+input[type="text"]:focus, textarea:focus {
+  border-color: #00c6ff;
+}
+
+textarea {
+  height: 180px;
+  resize: vertical;
+}
+
+.btn-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.btn-main {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: white;
+  font-family: 'Cairo', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 114, 255, 0.3);
+}
+
+.btn-main:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 114, 255, 0.5);
+}
+
+.btn-copy {
+  background: linear-gradient(135deg, #11998e, #38ef7d);
+  box-shadow: 0 4px 15px rgba(56, 239, 125, 0.25);
+}
+
+.btn-copy:hover {
+  box-shadow: 0 6px 20px rgba(56, 239, 125, 0.4);
+}
+
+/* شريط الإحصائيات */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.stat-card {
+  background: rgba(10, 14, 23, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+}
+
+.stat-title {
+  font-size: 12px;
+  color: #a0aec0;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.stat-total { color: #00c6ff; }
+.stat-pass { color: #38ef7d; }
+.stat-fail { color: #ff4b5c; }
+.stat-wrong { color: #ffb400; }
+
+.result-container {
+  margin-top: 15px;
+  background: rgba(10, 14, 23, 0.8);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+/* الجدول */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: right;
+}
+
+th, td {
+  padding: 14px 20px;
+  font-size: 14px;
+}
+
+th {
+  background: rgba(255, 255, 255, 0.05);
+  color: #00c6ff;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(5px);
+}
+
+tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+td.id-cell {
+  font-family: monospace;
+  direction: ltr;
+  text-align: right;
+  color: #38ef7d;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.telegram-preview {
+  padding: 20px;
+  white-space: pre-wrap;
+  line-height: 1.8;
+  color: #e2e8f0;
+  font-size: 14px;
+}
+
+.empty-state {
+  padding: 30px;
+  text-align: center;
+  color: #718096;
+  font-size: 15px;
+}
+
+/* Custom Scrollbar */
+.result-container::-webkit-scrollbar {
+  width: 6px;
+}
+.result-container::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+}
+.result-container::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 4px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="overlay">
+
+  <div class="container">
+
+    <div class="header">
+      <h1>نتائج الدورة والبرقية</h1>
+    </div>
+
+    <div class="tabs">
+      <button id="tabPassBtn" class="tab-btn active" onclick="showTab('pass')">الناجحين</button>
+      <button id="tabTelegramBtn" class="tab-btn" onclick="showTab('telegram')">البرقية الجاهزة</button>
+      <button id="tabWrongBtn" class="tab-btn" onclick="showTab('wrong')">الكوبي اي دي غير واقعى</button>
+    </div>
+
+    <!-- إدخال التاريخ تلقائياً -->
+    <div class="inputs-row">
+      <div class="input-field">
+        <label>التاريخ (يقرأ تلقائياً من الجهاز):</label>
+        <input type="text" id="dateInput" placeholder="مثال: 04/09/2026">
+      </div>
+    </div>
+
+    <label>الصق البيانات هنا:</label>
+    <textarea id="data" placeholder="قم بوضع القائمة هنا..."></textarea>
+
+    <div class="btn-group">
+      <button class="btn-main" onclick="generate()">استخراج النتائج والبرقية</button>
+      <button id="copyBtn" class="btn-main btn-copy" onclick="copyResult()">نسخ النتيجة</button>
+    </div>
+
+    <!-- كروت الإحصائيات -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-title">إجمالي المتقدمين</div>
+        <div class="stat-value stat-total" id="statTotal">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">عدد الناجحين</div>
+        <div class="stat-value stat-pass" id="statPass">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">عدد الراسبين</div>
+        <div class="stat-value stat-fail" id="statFail">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">بدون ID / غير واقعي</div>
+        <div class="stat-value stat-wrong" id="statWrong">0</div>
+      </div>
+    </div>
+
+    <!-- جدول الناجحين -->
+    <div id="passTab" class="result-container">
+      <table>
+        <thead>
+          <tr>
+            <th>الاسم والكود</th>
+            <th>Discord ID</th>
+          </tr>
+        </thead>
+        <tbody id="passTableBody">
+          <tr>
+            <td colspan="2" class="empty-state">لا توجد نتائج حتى الآن</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- عرض البرقية -->
+    <div id="telegramTab" class="result-container" style="display:none">
+      <div id="telegramContent" class="telegram-preview">لا توجد برقية مولدة حتى الآن</div>
+    </div>
+
+    <!-- جدول الحالات غير الواقعية -->
+    <div id="wrongTab" class="result-container" style="display:none">
+      <table>
+        <thead>
+          <tr>
+            <th>الاسم والبيانات المنسوخة</th>
+          </tr>
+        </thead>
+        <tbody id="wrongTableBody">
+          <tr>
+            <td class="empty-state">لا توجد نتائج حتى الآن</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+let currentTab = "pass";
+let passedIDsOnly = [];
+let fullTelegramText = "";
+
+// دالة لجلب تاريخ الجهاز بتنسيق DD/MM/YYYY مع إضافة الأصفار
+function getSystemDate() {
+  let today = new Date();
+  let day = String(today.getDate()).padStart(2, '0');
+  let month = String(today.getMonth() + 1).padStart(2, '0');
+  let year = today.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+// تعيين تاريخ الجهاز تلقائياً عند تحميل الصفحة
+window.onload = function() {
+  document.getElementById("dateInput").value = getSystemDate();
+};
+
+function generate() {
+  let rawText = document.getElementById("data").value;
+  let dateVal = document.getElementById("dateInput").value.trim() || getSystemDate();
+
+  // تنظيف النص من الأحرف والمسافات المخفية
+  let cleanText = rawText.replace(/[\u00A0\u1680\u180E\u2000-\u200B\u202F\u205F\u3000\uFEFF]/g, " ");
+  let lines = cleanText.split("\n");
+
+  let eCodeItems = [];
+  let otherCodeItems = [];
+  let wrongListForCopy = [];
+
+  let totalCount = 0;
+  let passCount = 0;
+  let failCount = 0;
+
+  lines.forEach(line => {
+    let trimmed = line.trim();
+    if (!trimmed) return;
+
+    // استخراج الدرجة
+    let scoreMatch = trimmed.match(/(\d{1,2})\s*\/\s*20/);
+    if (!scoreMatch) return;
+
+    totalCount++;
+    let score = parseInt(scoreMatch[1], 10);
+
+    if (score >= 15) {
+      passCount++;
+
+      // استخراج الـ ID
+      let idMatch = trimmed.match(/(\d{17,19})\s*$/);
+      // استخراج الاسم والكود
+      let nameCode = trimmed.replace(/^.*?\d{1,2}\s*\/\s*20\s*/, '').replace(/\d{17,19}\s*$/, '').trim();
+
+      if (idMatch) {
+        let discordTag = "<@" + idMatch[1] + ">";
+        
+        // التعبير النمطي الشامل للتحقق من وجود E أو e متبوعة بشرطة (مع أو بدون مسافات) وأرقام
+        let isECode = /e\s*[-–—]?\s*\d+/i.test(nameCode);
+
+        let itemData = {
+          nameCode: nameCode || "غير محدد",
+          discordTag: discordTag
+        };
+
+        if (isECode) {
+          eCodeItems.push(itemData);
+        } else {
+          otherCodeItems.push(itemData);
+        }
+      } else {
+        let wrongText = nameCode || trimmed;
+        wrongListForCopy.push(wrongText);
+      }
+    } else {
+      failCount++;
+    }
+  });
+
+  // تحديث أرقام الإحصائيات
+  document.getElementById("statTotal").textContent = totalCount;
+  document.getElementById("statPass").textContent = passCount;
+  document.getElementById("statFail").textContent = failCount;
+  document.getElementById("statWrong").textContent = wrongListForCopy.length;
+
+  // تجميع العناصر (E في الأعلى أولاً)
+  let sortedPassedItems = [...eCodeItems, ...otherCodeItems];
+  passedIDsOnly = sortedPassedItems.map(item => item.discordTag);
+
+  let passRowsHTML = sortedPassedItems.map(item => `
+    <tr>
+      <td>${item.nameCode}</td>
+      <td class="id-cell">${item.discordTag}</td>
+    </tr>
+  `).join("");
+
+  let wrongRowsHTML = wrongListForCopy.map(text => `
+    <tr>
+      <td>${text}</td>
+    </tr>
+  `).join("");
+
+  // تحديث الجداول
+  document.getElementById("passTableBody").innerHTML = passRowsHTML || `<tr><td colspan="2" class="empty-state">لا توجد نتائج متطابقة</td></tr>`;
+  document.getElementById("wrongTableBody").innerHTML = wrongRowsHTML || `<tr><td class="empty-state">لا توجد بيانات بدون ID</td></tr>`;
+  document.getElementById("wrongTab").dataset.copyText = wrongListForCopy.join("\n");
+
+  // بناء نص البرقية
+  if (passedIDsOnly.length > 0) {
+    let idsBlock = passedIDsOnly.join("\n\n");
+
+    fullTelegramText = `﷽
+
+***بناءً على توجيه معالي وزير الصحة الـبـروفـيـسـور*** <@813079786855464961> 
+
+***ببدء دورة العمليات وذلك في يوم ( الجمعة ) الموافق (${dateVal}) وبعد الإنتهاء من الدورة فقد تقرر منح رول <@&1413561515696717967>  لكل من :***
+
+${idsBlock}
+
+-----------------------------------------
+
+مسؤول دورة <@&1413561515696717967>  |
+
+**توقيع:**
+<@&1196864224929005701> 
+
+
+**‏‎اعتماد:**
+<@&1071933358503903242> 
+<@813079786855464961> 
+
+<@&1071933359086911561>   
+<@1162195276514197527>  
+
+**مدربين الدورة :** `;
+
+    document.getElementById("telegramContent").textContent = fullTelegramText;
+  } else {
+    fullTelegramText = "";
+    document.getElementById("telegramContent").textContent = "لا توجد نتائج ناجحة لتوليد البرقية.";
+  }
+}
+
+function showTab(tab) {
+  currentTab = tab;
+  let pass = document.getElementById("passTab");
+  let telegram = document.getElementById("telegramTab");
+  let wrong = document.getElementById("wrongTab");
+  
+  let passBtn = document.getElementById("tabPassBtn");
+  let telegramBtn = document.getElementById("tabTelegramBtn");
+  let wrongBtn = document.getElementById("tabWrongBtn");
+
+  pass.style.display = "none";
+  telegram.style.display = "none";
+  wrong.style.display = "none";
+  passBtn.classList.remove("active");
+  telegramBtn.classList.remove("active");
+  wrongBtn.classList.remove("active");
+
+  if (tab === "pass") {
+    pass.style.display = "block";
+    passBtn.classList.add("active");
+  } else if (tab === "telegram") {
+    telegram.style.display = "block";
+    telegramBtn.classList.add("active");
+  } else {
+    wrong.style.display = "block";
+    wrongBtn.classList.add("active");
+  }
+}
+
+function copyResult() {
+  let btn = document.getElementById("copyBtn");
+  let textToCopy = "";
+
+  if (currentTab === "pass") {
+    textToCopy = passedIDsOnly.join("\n\n");
+  } else if (currentTab === "telegram") {
+    textToCopy = fullTelegramText;
+  } else {
+    textToCopy = document.getElementById("wrongTab").dataset.copyText || "";
+  }
+
+  if (!textToCopy) {
+    btn.innerText = "لا يوجد شيء للنسخ";
+    setTimeout(() => { btn.innerText = "نسخ النتيجة"; }, 2000);
+    return;
+  }
+
+  navigator.clipboard.writeText(textToCopy);
+  btn.innerText = "✓ تم النسخ بنجاح";
+  setTimeout(() => { btn.innerText = "نسخ النتيجة"; }, 2000);
+}
+
+document.addEventListener('keydown', function(e) {
+  if (
+    (e.ctrlKey && e.key.toLowerCase() === 'u') ||
+    (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i') ||
+    (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'j') ||
+    (e.ctrlKey && e.key.toLowerCase() === 's')
+  ) {
+    e.preventDefault();
+  }
+});
+
+document.addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+});
+
+</script>
+
+</body>
+</html>
